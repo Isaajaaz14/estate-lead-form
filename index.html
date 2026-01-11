@@ -3,144 +3,567 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Free Property Valuation Estimate</title>
+  <title>ForgeLead — Instant Property Valuation Estimate</title>
+  <meta name="description" content="Get an indicative property valuation range by email in minutes. Fast, professional, and automated by ForgeLead." />
+
+  <!-- Favicon (put your icon at /assets/favicon.png) -->
+  <link rel="icon" href="./assets/favicon.png" />
+
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f6f7fb;color:#111}
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .card{width:100%;max-width:720px;background:#fff;border:1px solid #e6e8ef;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.06);padding:28px}
-    h1{margin:0 0 8px;font-size:28px}
-    p{margin:0 0 16px;line-height:1.45;color:#333}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    :root{
+      --bg0:#070B18;
+      --bg1:#0B1230;
+      --card:#0B1024cc;
+      --border:#223055;
+      --text:#EAF0FF;
+      --muted:#B8C6E6;
+      --muted2:#93A7D8;
+      --blue:#2DA7FF;
+      --blue2:#0B78FF;
+      --orange:#FF7A18;
+      --good:#22c55e;
+      --bad:#ef4444;
+
+      --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --shadow2: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 14px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 12% 8%, rgba(45,167,255,.25), transparent 55%),
+        radial-gradient(900px 600px at 85% 15%, rgba(255,122,24,.22), transparent 55%),
+        radial-gradient(800px 550px at 60% 85%, rgba(11,120,255,.22), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    a{color:inherit}
+    .container{width:100%; max-width:1100px; margin:0 auto; padding:0 20px;}
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(7,11,24,.75), rgba(7,11,24,.25));
+      border-bottom: 1px solid rgba(34,48,85,.6);
+    }
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 0;
+      gap:14px;
+    }
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none;}
+    .brand img{height:34px; width:auto; display:block}
+    .navlinks{display:flex; align-items:center; gap:14px; color:var(--muted)}
+    .navlinks a{
+      text-decoration:none; opacity:.9;
+      padding:8px 10px; border-radius:12px;
+      transition: background .15s ease, opacity .15s ease;
+    }
+    .navlinks a:hover{background:rgba(255,255,255,.06); opacity:1}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(34,48,85,.75);
+      background: rgba(10,16,36,.55);
+      color:var(--muted);
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:50%;
+      background: linear-gradient(90deg, var(--orange), var(--blue));
+      box-shadow: 0 0 0 4px rgba(45,167,255,.12);
+    }
+
+    .hero{padding:48px 0 26px;}
+    .heroGrid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:22px;
+      align-items:start;
+    }
+
+    .headline{
+      font-size: 44px;
+      line-height:1.05;
+      margin: 14px 0 12px;
+      letter-spacing:-0.02em;
+    }
+    .sub{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size: 16.5px;
+      line-height:1.55;
+      max-width: 56ch;
+    }
+
+    .heroStats{
+      display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;
+    }
+    .stat{
+      flex: 0 1 auto;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(34,48,85,.7);
+      background: rgba(10,16,36,.55);
+      color:var(--muted);
+      font-size:13px;
+    }
+    .stat b{color:var(--text); font-weight:650}
+
+    .formCard{
+      border-radius: var(--radius);
+      border: 1px solid rgba(34,48,85,.75);
+      background: linear-gradient(180deg, rgba(11,16,36,.78), rgba(11,16,36,.55));
+      box-shadow: var(--shadow);
+      padding: 18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .formCard:before{
+      content:"";
+      position:absolute; inset:-1px;
+      background: radial-gradient(500px 160px at 20% 0%, rgba(45,167,255,.23), transparent 55%),
+                  radial-gradient(460px 150px at 90% 0%, rgba(255,122,24,.18), transparent 60%);
+      pointer-events:none;
+    }
+    .formInner{position:relative}
+    .formTop{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:10px;
+    }
+    .miniBrand{display:flex; align-items:center; gap:10px;}
+    .miniBrand img{height:26px; width:auto}
+    .formTop small{color:var(--muted2);}
+
+    form{margin:0}
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
     .full{grid-column:1 / -1}
-    label{display:block;font-size:13px;color:#444;margin:6px 0}
-    input,select{width:100%;padding:10px 12px;border:1px solid #ccd3e0;border-radius:10px;font-size:15px}
-    input:focus,select:focus{outline:2px solid #c7d2fe;border-color:#93a4ff}
-    .btn{margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:12px;background:#111;color:#fff;font-size:16px;cursor:pointer}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    .note{font-size:12px;color:#555;margin-top:10px}
-    .success{display:none;padding:14px;border-radius:12px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;margin-top:14px}
-    .error{display:none;padding:14px;border-radius:12px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;margin-top:14px}
-    @media (max-width:720px){.grid{grid-template-columns:1fr}}
+
+    label{display:block; font-size:13px; color:var(--muted); margin:10px 0 6px}
+    input,select{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(34,48,85,.85);
+      background: rgba(7,11,24,.55);
+      color: var(--text);
+      font-size: 15px;
+      outline:none;
+      transition: border .15s ease, box-shadow .15s ease, transform .05s ease;
+    }
+    input::placeholder{color:rgba(184,198,230,.65)}
+    input:focus, select:focus{
+      border-color: rgba(45,167,255,.75);
+      box-shadow: 0 0 0 4px rgba(45,167,255,.14);
+    }
+
+    .radioRow{
+      display:flex; flex-wrap:wrap; gap:10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border:1px solid rgba(34,48,85,.75);
+      background: rgba(7,11,24,.38);
+      margin-top:2px;
+    }
+    .radioChip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(34,48,85,.75);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 13px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .radioChip input{width:auto; padding:0; margin:0; accent-color: var(--blue)}
+    .helper{margin-top:6px; color:var(--muted2); font-size:12px; line-height:1.4}
+
+    .btn{
+      width:100%;
+      margin-top:14px;
+      padding: 13px 14px;
+      border: 0;
+      border-radius: 16px;
+      color:#07101f;
+      font-weight: 750;
+      font-size: 15.5px;
+      letter-spacing:.01em;
+      background: linear-gradient(90deg, var(--orange), var(--blue));
+      box-shadow: 0 14px 30px rgba(45,167,255,.12), 0 10px 22px rgba(255,122,24,.10);
+      cursor:pointer;
+      transition: transform .08s ease, filter .15s ease, opacity .15s ease;
+    }
+    .btn:hover{filter:brightness(1.02)}
+    .btn:active{transform: translateY(1px)}
+    .btn:disabled{opacity:.6; cursor:not-allowed}
+
+    .msg{
+      display:none;
+      margin-top:12px;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(34,48,85,.7);
+      background: rgba(7,11,24,.45);
+      color: var(--muted);
+      line-height:1.45;
+    }
+    .msg.ok{
+      border-color: rgba(34,197,94,.35);
+      background: rgba(34,197,94,.10);
+      color: #d7ffe6;
+    }
+    .msg.err{
+      border-color: rgba(239,68,68,.35);
+      background: rgba(239,68,68,.10);
+      color: #ffe2e2;
+    }
+
+    .trustbar{
+      margin: 18px 0 0;
+      display:flex; flex-wrap:wrap; gap:10px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+    .trustItem{
+      display:flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(34,48,85,.7);
+      background: rgba(10,16,36,.40);
+    }
+    .icon{
+      width:18px; height:18px; display:inline-block;
+      color: rgba(234,240,255,.92);
+    }
+
+    .section{padding: 18px 0 46px;}
+    .sectionTitle{
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing:-.01em;
+    }
+    .sectionSub{margin:0 0 18px; color:var(--muted); line-height:1.55}
+
+    .steps{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    .step{
+      border-radius: var(--radius2);
+      border: 1px solid rgba(34,48,85,.72);
+      background: rgba(10,16,36,.42);
+      padding:14px;
+      box-shadow: var(--shadow2);
+    }
+    .stepNum{
+      width:28px; height:28px; border-radius:10px;
+      display:grid; place-items:center;
+      background: rgba(45,167,255,.12);
+      border:1px solid rgba(45,167,255,.35);
+      color: var(--text);
+      font-weight: 800;
+      margin-bottom:10px;
+    }
+    .step h3{margin:0 0 6px; font-size:15.5px}
+    .step p{margin:0; color:var(--muted); font-size:13.5px; line-height:1.5}
+
+    footer{
+      border-top:1px solid rgba(34,48,85,.55);
+      padding: 20px 0 26px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+    .foot{
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+    }
+    .foot a{color:var(--muted); text-decoration:none; opacity:.9}
+    .foot a:hover{opacity:1}
+
+    /* Responsive */
+    @media (max-width: 920px){
+      .heroGrid{grid-template-columns:1fr; gap:16px}
+      .headline{font-size: 40px}
+    }
+    @media (max-width: 720px){
+      .grid{grid-template-columns:1fr}
+      .steps{grid-template-columns:1fr}
+      .headline{font-size: 34px}
+      .navlinks{display:none}
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>Get a Free Property Valuation Estimate by Email</h1>
-      <p>Answer a few quick questions and we’ll email you an indicative valuation range and suggested asking price.</p>
+  <header class="topbar">
+    <div class="container">
+      <div class="nav">
+        <a class="brand" href="#">
+          <!-- Put your horizontal logo at /assets/forgelead-logo.png -->
+          <img src="./assets/forgelead-logo.png" alt="ForgeLead" />
+        </a>
 
-      <form id="leadForm">
-        <div class="grid">
-          <div>
-            <label for="postcode">Postcode *</label>
-            <input id="postcode" name="postcode" required placeholder="e.g. NG1 2AB" />
-          </div>
+        <nav class="navlinks" aria-label="Primary">
+          <a href="#estimate">Instant Estimate</a>
+          <a href="#how">How it works</a>
+          <a href="#privacy">Privacy</a>
+        </nav>
 
-          <div>
-            <label for="property_type">Property type *</label>
-            <select id="property_type" name="property_type" required>
-              <option value="">Select…</option>
-              <option>House</option>
-              <option>Flat</option>
-              <option>Bungalow</option>
-              <option>Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="bedrooms">Bedrooms *</label>
-            <select id="bedrooms" name="bedrooms" required>
-              <option value="">Select…</option>
-              <option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="condition">Condition *</label>
-            <select id="condition" name="condition" required>
-              <option value="">Select…</option>
-              <option>Excellent</option>
-              <option>Good</option>
-              <option>Average</option>
-              <option>Needs Work</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="renovations">Renovations *</label>
-            <select id="renovations" name="renovations" required>
-              <option value="">Select…</option>
-              <option>None</option>
-              <option>Minor</option>
-              <option>Major</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="timeline">Timeline to sell *</label>
-            <select id="timeline" name="timeline" required>
-              <option value="">Select…</option>
-              <option>0–3 months</option>
-              <option>3–6 months</option>
-              <option>6–12 months</option>
-              <option>Just curious</option>
-            </select>
-          </div>
-
-          <div class="full">
-            <label>Already using another agent? *</label>
-            <label style="display:inline-flex;gap:8px;align-items:center;margin-right:14px;">
-              <input type="radio" name="other_agent" value="Yes" required /> Yes
-            </label>
-            <label style="display:inline-flex;gap:8px;align-items:center;">
-              <input type="radio" name="other_agent" value="No" required /> No
-            </label>
-          </div>
-
-          <div>
-            <label for="full_name">Full name *</label>
-            <input id="full_name" name="full_name" required placeholder="Your name" />
-          </div>
-
-          <div>
-            <label for="email">Email *</label>
-            <input id="email" name="email" type="email" required placeholder="you@email.com" />
-          </div>
-
-          <div class="full">
-            <label for="phone">Phone (optional)</label>
-            <input id="phone" name="phone" placeholder="07..." />
-          </div>
+        <div class="pill" title="Runs automatically via ForgeLead">
+          <span class="dot"></span>
+          Automated lead response
         </div>
-
-        <button class="btn" id="submitBtn" type="submit">Email My Valuation Estimate</button>
-
-        <div class="success" id="successBox">
-          ✅ Thanks — your estimate is being prepared. You’ll receive it by email in the next few minutes.
-        </div>
-        <div class="error" id="errorBox">
-          ❌ Something went wrong. Please try again in a moment.
-        </div>
-
-        <div class="note">
-          Estimates are indicative and not a formal valuation. We only contact you if you request it.
-        </div>
-      </form>
+      </div>
     </div>
-  </div>
+  </header>
+
+  <main>
+    <section class="hero" id="estimate">
+      <div class="container">
+        <div class="heroGrid">
+          <div>
+            <div class="pill" style="display:inline-flex">
+              <span class="dot"></span>
+              Free, fast, and indicative (not a formal valuation)
+            </div>
+
+            <h1 class="headline">Get your instant property valuation estimate by email</h1>
+            <p class="sub">
+              Answer a few quick questions and ForgeLead will send an <b>indicative value range</b> and
+              a <b>suggested asking price</b> within minutes. Built for speed, clarity, and a professional experience.
+            </p>
+
+            <div class="heroStats">
+              <div class="stat"><b>1–2 mins</b> to complete</div>
+              <div class="stat"><b>Instant reply</b> to every enquiry</div>
+              <div class="stat"><b>HOT/WARM/COLD</b> intent scoring</div>
+            </div>
+          </div>
+
+          <div class="formCard" aria-label="Valuation Lead Form">
+            <div class="formInner">
+              <div class="formTop">
+                <div class="miniBrand">
+                  <!-- Put your icon at /assets/forgelead-icon.png -->
+                  <img src="./assets/forgelead-icon.png" alt="ForgeLead icon" />
+                  <div>
+                    <div style="font-weight:800; letter-spacing:-.01em">Valuation Estimate</div>
+                    <small>Fill in details to receive your estimate</small>
+                  </div>
+                </div>
+              </div>
+
+              <form id="leadForm" novalidate>
+                <div class="grid">
+                  <div>
+                    <label for="postcode">Postcode <span aria-hidden="true">*</span></label>
+                    <input id="postcode" name="postcode" required placeholder="e.g. NG1 2AB" autocomplete="postal-code" />
+                    <div class="helper">We use postcode-level signals and your answers below.</div>
+                  </div>
+
+                  <div>
+                    <label for="property_type">Property type <span aria-hidden="true">*</span></label>
+                    <select id="property_type" name="property_type" required>
+                      <option value="">Select…</option>
+                      <option>House</option>
+                      <option>Flat</option>
+                      <option>Bungalow</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label for="bedrooms">Bedrooms <span aria-hidden="true">*</span></label>
+                    <select id="bedrooms" name="bedrooms" required>
+                      <option value="">Select…</option>
+                      <option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label for="condition">Condition <span aria-hidden="true">*</span></label>
+                    <select id="condition" name="condition" required>
+                      <option value="">Select…</option>
+                      <option>Excellent</option>
+                      <option>Good</option>
+                      <option>Average</option>
+                      <option>Needs Work</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label for="renovations">Renovations <span aria-hidden="true">*</span></label>
+                    <select id="renovations" name="renovations" required>
+                      <option value="">Select…</option>
+                      <option>None</option>
+                      <option>Minor</option>
+                      <option>Major</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label for="timeline">Timeline to sell <span aria-hidden="true">*</span></label>
+                    <select id="timeline" name="timeline" required>
+                      <option value="">Select…</option>
+                      <option>0–3 months</option>
+                      <option>3–6 months</option>
+                      <option>6–12 months</option>
+                      <option>Just curious</option>
+                    </select>
+                  </div>
+
+                  <div class="full">
+                    <label>Already using another agent? <span aria-hidden="true">*</span></label>
+                    <div class="radioRow" role="radiogroup" aria-label="Already using another agent?">
+                      <label class="radioChip">
+                        <input type="radio" name="other_agent" value="Yes" required />
+                        Yes
+                      </label>
+                      <label class="radioChip">
+                        <input type="radio" name="other_agent" value="No" required />
+                        No
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="full_name">Full name <span aria-hidden="true">*</span></label>
+                    <input id="full_name" name="full_name" required placeholder="Your name" autocomplete="name" />
+                  </div>
+
+                  <div>
+                    <label for="email">Email <span aria-hidden="true">*</span></label>
+                    <input id="email" name="email" type="email" required placeholder="you@email.com" autocomplete="email" />
+                  </div>
+
+                  <div class="full">
+                    <label for="phone">Phone (optional)</label>
+                    <input id="phone" name="phone" placeholder="07..." autocomplete="tel" />
+                    <div class="helper">Optional — helps if you’d like a quick follow-up call.</div>
+                  </div>
+                </div>
+
+                <button class="btn" id="submitBtn" type="submit">Email My Valuation Estimate</button>
+
+                <div class="msg ok" id="successBox">
+                  ✅ Thanks — your estimate is being prepared. You’ll receive it by email in the next few minutes.
+                </div>
+
+                <div class="msg err" id="errorBox">
+                  ❌ Something went wrong. Please try again in a moment.
+                </div>
+
+                <div class="trustbar" id="privacy">
+                  <div class="trustItem">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z" stroke="currentColor" stroke-width="1.6"/>
+                      <path d="M9.5 12l1.8 1.8 3.6-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Privacy-first: only used to reply to your enquiry
+                  </div>
+
+                  <div class="trustItem">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 3v10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                      <path d="M12 13l4 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                      <path d="M21 12a9 9 0 1 1-9-9 9 9 0 0 1 9 9Z" stroke="currentColor" stroke-width="1.6"/>
+                    </svg>
+                    Fast response: automated delivery in minutes
+                  </div>
+
+                  <div class="trustItem">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none">
+                      <path d="M4 7h16M7 7v14m10-14v14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                      <path d="M5 7l1-3h12l1 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Indicative estimate, not a formal valuation
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="container">
+        <h2 class="sectionTitle">How ForgeLead works</h2>
+        <p class="sectionSub">
+          Designed to feel premium and professional — while automatically capturing and qualifying enquiries behind the scenes.
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="stepNum">1</div>
+            <h3>Enter your details</h3>
+            <p>Complete the short form. We use your answers to tailor an indicative estimate.</p>
+          </div>
+          <div class="step">
+            <div class="stepNum">2</div>
+            <h3>Get an instant estimate</h3>
+            <p>We generate a value range, suggested asking price, and an intent score.</p>
+          </div>
+          <div class="step">
+            <div class="stepNum">3</div>
+            <h3>Next steps, automatically</h3>
+            <p>You receive an email. The agent receives a qualified lead summary instantly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="foot">
+          <div>© <span id="year"></span> ForgeLead. All rights reserved.</div>
+          <div style="display:flex; gap:14px; align-items:center">
+            <a href="#estimate">Estimate</a>
+            <a href="#how">How it works</a>
+            <a href="#privacy">Privacy</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
 
   <script>
-    const WEBHOOK_URL = "https://hook.eu1.make.com/ne8h9ji2tu80ur2obgk44uaxwwcnhb6u"; // Zapier/Make webhook
+    // ✅ IMPORTANT: paste your Make webhook URL here
+    const WEBHOOK_URL = "https://hook.eu1.make.com/ne8h9ji2tu80ur2obgk44uaxwwcnhb6u";
+
     const form = document.getElementById("leadForm");
     const btn = document.getElementById("submitBtn");
     const successBox = document.getElementById("successBox");
     const errorBox = document.getElementById("errorBox");
 
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function show(box) { box.style.display = "block"; }
+    function hide(box) { box.style.display = "none"; }
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      successBox.style.display = "none";
-      errorBox.style.display = "none";
+      hide(successBox);
+      hide(errorBox);
+
+      // Basic browser validation
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
       btn.disabled = true;
+      btn.textContent = "Sending…";
 
       const data = Object.fromEntries(new FormData(form).entries());
 
@@ -154,12 +577,13 @@
         if (!res.ok) throw new Error("Webhook failed");
 
         form.reset();
-        successBox.style.display = "block";
+        show(successBox);
       } catch (err) {
         console.error(err);
-        errorBox.style.display = "block";
+        show(errorBox);
       } finally {
         btn.disabled = false;
+        btn.textContent = "Email My Valuation Estimate";
       }
     });
   </script>
